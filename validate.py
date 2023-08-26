@@ -19,29 +19,29 @@ def validate_path(p : str):
     return True
 
 # Returns list of suspicious pdb paths
-def validate_pdb(pdb_path):
+def validate_pdbs_in_dmp(dmp_path):
     mdf = minidumpfile.MinidumpFile()
-    pdb = mdf.parse(pdb_path)
-    if pdb == None or pdb.modules == None:
+    dmp = mdf.parse(dmp_path)
+    if dmp == None or dmp.modules == None:
         return []
     
     bads = []
-    for m in pdb.modules.modules:
+    for m in dmp.modules.modules:
         if validate_path(m.cv.PdbName) == False:
             bads.append(m.cv.PdbName)
     return bads
 
 
-def run(pdb):
-	result = validate_pdb(pdb)
+def run(dmp):
+	result = validate_pdbs_in_dmp(dmp)
 	if len(result)==0:
-		print("PDB file is OK, no SMB paths found")
+		print("Dump file is OK, no SMB paths found")
 	else:
-		print("Suspicious PDB, SMB paths found:", result)
+		print("Suspicious dump, SMB paths found:", result)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: ./validate.py path/to/file.pdb")
+        print("Usage: ./validate.py path/to/file.dmp")
         exit(-1)
     run(sys.argv[1])
     exit(0)
